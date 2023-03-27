@@ -66,7 +66,7 @@ classifier_start.fit(X_train,y_train, batch_size=10, epochs=50)
 
 # network 2: get ending square from board and starting square    
 
-X_train, X_test, y_train, y_test = train_test_split(x_end, y_end, test_size=0.3)
+X_train, X_test2, y_train, y_test2 = train_test_split(x_end, y_end, test_size=0.3)
 
 classifier_end = Sequential()
 #First Hidden Layer
@@ -85,13 +85,13 @@ classifier_end.fit(X_train,y_train, batch_size=10, epochs=50)
 
 # evaluation
 
+classifier_start.save("start_net")
+classifier_end.save("end_net")
+
 eval_model=classifier_start.evaluate(X_test, y_test)
 eval_model
 print(eval_model)
 
-eval_model=classifier_end.evaluate(X_test, y_test)
+eval_model=classifier_end.evaluate(X_test2, y_test2)
 eval_model
 print(eval_model)
-
-classifier_start.save("start_net")
-classifier_end.save("end_net")
