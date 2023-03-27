@@ -125,6 +125,12 @@ def get_move(board):
                 return move
             except:
                 
+                try:
+                    board.push_uci(move + "Q")
+                    return move + "Q"
+                except:
+                    pass
+                
                 if end_square_list[end_square_index] <= 0:
                     wrong_start = True
                 else: 
@@ -145,8 +151,12 @@ if (colour == 0):
     
     while (not board.is_checkmate()):
         
-        player_move = input()
-        board.push_san(player_move)
+        try:
+            player_move = input()
+            board.push_san(player_move)
+        except:
+            print("invalid move, try again")
+            continue
         
         engine_move = get_move(board)
         print(engine_move)
@@ -160,8 +170,12 @@ else:
         engine_move = get_move(board)
         print(engine_move)
         
-        player_move = input()
-        board.push_san(player_move)
+        try:
+            player_move = input()
+            board.push_san(player_move)
+        except:
+            print("invalid move, try again")
+            continue
         
     print("The winner is: " + board.outcome().winner)
     
