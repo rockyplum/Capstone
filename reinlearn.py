@@ -11,43 +11,87 @@ import json
 with open('boards.json', 'r') as f:
     data = json.load(f)
     
-x = []
-y = []
+x_start = []
+y_start = []
+x_end = []
+y_end = []
 
-for board in data['board']:
+for n in range(len(data['board'])):
     
+    board = data['board'][n]
     board_info = []
+    board_info_with_start = []
     
     for i in range(len(board) - 1):
         square = board[i]
         for s in square:
             board_info.append(s)
+            board_info_with_start.append(s)
     
     board_info.append(board[-1])
+    board_info_with_start.append(board[-1])
     
-    x.append(board_info)
+    x_start.append(board_info)
     
-for start_square in data['start']:
-    y.append(start_square)
+    start_square = data['start'][n]
+    end_square = data['end'][n]
+    
+    y_start.append(start_square)
+    y_end.append(end_square)
+    
+    for s in start_square:
+        board_info_with_start.append(s)
+        
+    x_end.append(board_info_with_start)
+        
 
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3)
+# network 1: get starting square from board        
 
-# set up network
+X_train, X_test, y_train, y_test = train_test_split(x_start, y_start, test_size=0.3)
 
-classifier = Sequential()
+classifier_start = Sequential()
 #First Hidden Layer
-classifier.add(Dense(512, activation='relu', kernel_initializer='random_normal', input_dim=8)) # change input_dim
+classifier_start.add(Dense(512, activation='relu', kernel_initializer='random_normal', input_dim=833)) # change input_dim
 #Second  Hidden Layer
-classifier.add(Dense(256, activation='relu', kernel_initializer='random_normal'))
+classifier_start.add(Dense(256, activation='relu', kernel_initializer='random_normal'))
 #Output Layer
-classifier.add(Dense(64, activation='softmax', kernel_initializer='random_normal'))
+classifier_start.add(Dense(64, activation='softmax', kernel_initializer='random_normal'))
 
 #Compiling the neural network
-classifier.compile(optimizer ='adam',loss='binary_crossentropy', metrics =['accuracy'])
+classifier_start.compile(optimizer ='adam',loss='categorical_crossentropy', metrics =['accuracy'])
 
 #Fitting the data to the training dataset
-classifier.fit(X_train,y_train, batch_size=10, epochs=100)
+classifier_start.fit(X_train,y_train, batch_size=10, epochs=50)
 
-eval_model=classifier.evaluate(X_train, y_train)
+
+# network 2: get ending square from board and starting square    
+
+X_train, X_test, y_train, y_test = train_test_split(x_end, y_end, test_size=0.3)
+
+classifier_end = Sequential()
+#First Hidden Layer
+classifier_end.add(Dense(512, activation='relu', kernel_initializer='random_normal', input_dim=897)) # change input_dim
+#Second  Hidden Layer
+classifier_end.add(Dense(256, activation='relu', kernel_initializer='random_normal'))
+#Output Layer
+classifier_end.add(Dense(64, activation='softmax', kernel_initializer='random_normal'))
+
+#Compiling the neural network
+classifier_end.compile(optimizer ='adam',loss='categorical_crossentropy', metrics =['accuracy'])
+
+#Fitting the data to the training dataset
+classifier_end.fit(X_train,y_train, batch_size=10, epochs=50)
+
+
+# evaluation
+
+eval_model=classifier_start.evaluate(X_test, y_test)
 eval_model
+print(eval_model)
 
+eval_model=classifier_end.evaluate(X_test, y_test)
+eval_model
+print(eval_model)
+
+classifier_start.save("start_net")
+classifier_end.save("end_net")
