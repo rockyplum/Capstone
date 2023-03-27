@@ -11,16 +11,26 @@ import json
 with open('boards.json', 'r') as f:
     data = json.load(f)
     
-X = []
+x = []
 y = []
 
 for board in data['board']:
-    X.append(board)
+    
+    board_info = []
+    
+    for i in range(len(board) - 1):
+        square = board[i]
+        for s in square:
+            board_info.append(s)
+    
+    board_info.append(board[-1])
+    
+    x.append(board_info)
     
 for start_square in data['start']:
     y.append(start_square)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3)
 
 # set up network
 
